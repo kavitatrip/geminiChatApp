@@ -15,3 +15,6 @@
 # Input Prompt features
 - To take input
 - Can accept files and images along with text
+
+
+// Still needs improvements on Edge cases, styling 
