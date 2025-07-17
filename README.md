@@ -16,5 +16,5 @@
 - To take input
 - Can accept files and images along with text
 
-
+ *** In progress ***
 // Still needs improvements on Edge cases, styling 

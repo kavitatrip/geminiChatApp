@@ -61,8 +61,7 @@ const LoginPage = ({ loginInfo }) => {
     } else {
       alert("OTP is Invalid, Try again");
     }
-    resetOtp();
-    
+    resetOtp(); 
   };
 
   return (

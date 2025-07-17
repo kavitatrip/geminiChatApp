@@ -43,7 +43,7 @@ const ChatUIPage = () => {
       id: Date.now().toString(),
       sender: "user",
       text: isText && input.trim(),
-      image: image ? URL.createObjectURL(image) : null,
+      image: URL.createObjectURL(image),
       timestamp: new Date().toLocaleTimeString(),
     };
     dispatch(userMessages(messagePayload));
@@ -78,6 +78,7 @@ const ChatUIPage = () => {
         ref={chatRef}
       >
         {messages.map((msg) => (
+           console.log(msg),
           <div
             key={msg.id}
             className={`mb-2 ${
@@ -86,9 +87,9 @@ const ChatUIPage = () => {
           >
             <div className="inline-block bg-blue-200 px-3 py-1 rounded">
               {msg.text.text?.trim() && <p>{msg.text.text}</p>}
-              {msg.image && (
+              {msg.text.image && (
                 <img
-                  src={msg.image}
+                  src={msg.text.image}
                   alt="uploaded"
                   className="mt-1 max-w-[200px] rounded"
                 />
