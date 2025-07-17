@@ -5,6 +5,7 @@ const chatSlice = createSlice({
   initialState: {
     messages: [],
     chatHistory: [],
+    typing: false
   },
   reducers: {
     userMessages: (state, action) => {
@@ -34,8 +35,15 @@ const chatSlice = createSlice({
         state.messages = [...remaining, ...state.messages];
       }
     },
+    deleteChat: (state, action) => {
+       const id = action.payload
+       state.chatHistory = state.chatHistory.filter((history) => history.id !== id)
+    },
+    setTyping: (state, action)=> {
+        state.typing = action.payload
+    }
   },
 });
 
-export const { userMessages, aiResponseMessages, loadOlderChat } = chatSlice.actions;
+export const { userMessages, aiResponseMessages, loadOlderChat, deleteChat, setTyping } = chatSlice.actions;
 export default chatSlice.reducer;

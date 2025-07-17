@@ -1,49 +1,63 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { userMessages, aiResponseMessages, loadOlderChat } from '../utils/slices/chatSlice';
+import { userMessages, aiResponseMessages, loadOlderChat, setTyping } from '../utils/slices/chatSlice';
+import {Plus} from "lucide-react";
 
 const ChatUIPage = () => {
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.chat.messages);
+  const isTyping = useSelector((state) => state.chat.typing)
   const [input, setInput] = useState('');
   const chatRef = useRef(null);
+  const [image, setImage] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleScroll = (e) => {
     if (e.target.scrollTop === 0) {
       dispatch(loadOlderChat());
     }
   };
-
+const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   const sendMessage = () => {
-    if (!input.trim()) return;
+    if (!input.trim() && !image) return;
 
-    dispatch(
-      userMessages({
-        id: Date.now().toString(),
-        sender: 'user',
-        text: input,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    const messagePayload = {
+      id: Date.now().toString(),
+      sender: 'user',
+      text: input,
+      image: image ? URL.createObjectURL(image) : null,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+    dispatch(userMessages(messagePayload));
+    dispatch(setTyping(true));
+    setInput("");
+    setImage(null);
 
     setTimeout(() => {
-      dispatch(
-        aiResponseMessages({
-          id: Date.now().toString() + '-ai',
-          sender: 'ai',
-          text: `Gemini: Replied to \"${input}\"`,
-          timestamp: new Date().toISOString(),
-        })
-      );
-    }, 1200);
+      const aiReply = {
+        id: Date.now().toString() + '-ai',
+        sender: 'ai',
+        text: `Gemini: Replied to "${input}"`,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      dispatch(aiResponseMessages(aiReply));
+      dispatch(setTyping(false));
+    }, 2000 + Math.random() * 2000);
 
-    setInput('');
+   
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+     <form className="max-w-2xl mx-auto" 
+     onSubmit={(e) => {
+      e.preventDefault();
+      sendMessage
+     }}>
       <div
-        onScroll={handleScroll}
         className="h-96 overflow-y-scroll bg-gray-100 p-2 mb-4 rounded"
         ref={chatRef}
       >
@@ -52,11 +66,22 @@ const ChatUIPage = () => {
             key={msg.id}
             className={`mb-2 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}
           >
-            <span className="inline-block bg-blue-200 px-3 py-1 rounded">
-              {msg.text}
-            </span>
+            <div className="inline-block bg-blue-200 px-3 py-1 rounded">
+              <p>{msg.text.text}</p>
+              {msg.image && (
+                <img src={msg.image} alt="uploaded" className="mt-1 max-w-[200px] rounded" />
+              )}
+              <span className="text-xs text-gray-600 block">
+                {msg.text.timestamp}
+              </span>
+            </div>
           </div>
         ))}
+        {isTyping && (
+          <div className="text-left text-sm text-gray-500 mt-2">
+            Gemini is typing...
+          </div>
+        )}
       </div>
       <div className="flex gap-2">
         <input
@@ -68,8 +93,21 @@ const ChatUIPage = () => {
         <button onClick={sendMessage} className="bg-black text-white px-4 py-2 rounded">
           Send
         </button>
+
+        <div className="flex justify-start">
+          <button onClick={handleUploadClick} title="Upload image" className="hover:opacity-80">
+            <Plus className="w-6 h-6 text-gray-600" />
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={(e) => setImage(e.target.files[0])}
+            className="hidden"
+          />
+        </div>
       </div>
-    </div>
+    </form>
   );
 };
 

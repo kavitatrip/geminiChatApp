@@ -59,34 +59,72 @@ const LoginPage = ({ loginInfo }) => {
   };
 
   return (
-    <div>
-      Login Page/SignUp
-      <div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-500 px-4 rounded-md">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          {sentOtp ? "Enter OTP" : "Login / Sign Up"}
+        </h2>
+
         {!sentOtp ? (
-          <form onSubmit={handlePhoneNumSubmit(onPhoneSubmit)}>
-            <select
-              onChange={(e) => setCountryCode(e.target.value)}
-              value={countrycode}
+          <form onSubmit={handlePhoneNumSubmit(onPhoneSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Country Code
+              </label>
+              <select
+                className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                onChange={(e) => setCountryCode(e.target.value)}
+                value={countrycode}
+              >
+                {mockCountryCodeData.map((code, index) => (
+                  <option key={index}>{code.dial_code}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number
+              </label>
+              <input
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter Phone Number"
+                {...phoneNumRegister("phone")}
+              />
+              {numErrors.phone && (
+                <p className="text-red-500 text-sm mt-1">{numErrors.phone.message}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-2 rounded-lg transition"
             >
-              {mockCountryCodeData.map((code, index) => (
-                <option key={index}>{code.dial_code}</option>
-              ))}
-            </select>
-            <input
-              placeholder="Enter Phone Number"
-              {...phoneNumRegister("phone")}
-            />
-            {numErrors.phone && <p>{numErrors.phone.message}</p>}
-            <button>Continue</button>
+              Continue
+            </button>
           </form>
         ) : (
-          <form onSubmit={handleOtp(onOtpSubmit)}>
-            <input
-              placeholder="Enter OTP"
-              {...otpRegister("oTp")}
-            />
-            {otpErrors.oTp && <p>{otpErrors.oTp.message}</p>}
-            <button>Verify</button>
+          <form onSubmit={handleOtp(onOtpSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                OTP
+              </label>
+              <input
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter OTP"
+                {...otpRegister("oTp")}
+              />
+              {otpErrors.oTp && (
+                <p className="text-red-500 text-sm mt-1">{otpErrors.oTp.message}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-2 rounded-lg hover:bg-green-700 transition"
+            >
+              Verify
+            </button>
           </form>
         )}
       </div>
