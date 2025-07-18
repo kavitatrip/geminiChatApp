@@ -19,7 +19,7 @@ const RecentChats = () => {
           (msg) => (
               <li
                 key={msg.id}
-                className="flex items-center justify-between text-sm text-gray-500 hover:bg-gray-700 px-2 py-1 rounded cursor-pointer"
+                className="flex items-center justify-between text-sm text-black hover:bg-gray-400 px-2 py-1 rounded cursor-pointer"
                 onClick={() => selectChat(msg.text)}
               >
                 {msg.text && (

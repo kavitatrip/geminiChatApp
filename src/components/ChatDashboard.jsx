@@ -80,7 +80,7 @@ const ChatUIPage = () => {
       }}
     >
       <div
-        className="h-96 overflow-y-scroll bg-gray-100 p-2 mb-4 rounded"
+        className="h-150 w-170 overflow-y-scroll bg-gradient-to-br from-gray-200 p-3 mb-4 rounded"
         ref={chatRef}
       >
         {messages.map((msg) => (
@@ -91,7 +91,7 @@ const ChatUIPage = () => {
             }`}
           >
             {(msg?.text || msg?.image) && (
-              <div className="inline-block bg-blue-200 px-3 py-1 rounded">
+              <div className="inline-block bg-gray-200 px-3 p-1 rounded">
                 {msg?.text && <p>{msg?.text}</p>}
                 {msg?.image && (
                   <img
@@ -133,11 +133,11 @@ const ChatUIPage = () => {
             title="Upload image"
             className="hover:opacity-80"
           >
-            <Plus className="w-6 h-6 text-gray-600" />
+            <Plus className="w-6 h-6 text-gray-600 cursor-pointer" />
           </button>
           <input
             type="file"
-            accept="image/*"
+            accept="image/*, application/pdf"
             ref={fileInputRef}
             onChange={(e) => setImage(e.target.files[0])}
             className="hidden"
