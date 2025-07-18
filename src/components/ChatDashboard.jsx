@@ -36,33 +36,39 @@ const ChatUIPage = () => {
   };
   const sendMessage = () => {
     const isText = input.trim().length > 0;
+    const isImage = !!image;
 
-    if (!isText && !image) return;
+    if (!isText && !isImage) return;
+
+    const imageURL = isImage ? URL.createObjectURL(image) : null;
+    const textValue = input.trim();
 
     const messagePayload = {
       id: Date.now().toString(),
       sender: "user",
-      text: isText && input.trim(),
-      image: URL.createObjectURL(image),
+      text: isText ? textValue : null,
+      image: imageURL,
       timestamp: new Date().toLocaleTimeString(),
     };
+
     dispatch(userMessages(messagePayload));
     dispatch(setTyping(true));
     setInput("");
     setImage(null);
 
-    if (isText) {
-      setTimeout(() => {
-        const aiReply = {
-          id: Date.now().toString() + "-ai",
-          sender: "ai",
-          text: `Gemini: Replied to "${input.trim()}"`,
-          timestamp: new Date().toLocaleTimeString(),
-        };
-        dispatch(aiResponseMessages(aiReply));
-        dispatch(setTyping(false));
-      }, 2000 + Math.random() * 2000);
-    }
+    setTimeout(() => {
+      const aiReply = {
+        id: Date.now().toString(),
+        sender: "ai",
+        text: isText
+          ? `Gemini: Replied to "${textValue}"`
+          : "Gemini: Here's your image!",
+        image: isImage ? imageURL : null,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      dispatch(aiResponseMessages(aiReply));
+      dispatch(setTyping(false));
+    }, 2000 + Math.random() * 2000);
   };
 
   return (
@@ -70,7 +76,7 @@ const ChatUIPage = () => {
       className="max-w-2xl mx-auto"
       onSubmit={(e) => {
         e.preventDefault();
-        sendMessage;
+        sendMessage();
       }}
     >
       <div
@@ -78,26 +84,27 @@ const ChatUIPage = () => {
         ref={chatRef}
       >
         {messages.map((msg) => (
-           console.log(msg),
           <div
             key={msg.id}
             className={`mb-2 ${
               msg.sender === "user" ? "text-right" : "text-left"
             }`}
           >
-            <div className="inline-block bg-blue-200 px-3 py-1 rounded">
-              {msg.text.text?.trim() && <p>{msg.text.text}</p>}
-              {msg.text.image && (
-                <img
-                  src={msg.text.image}
-                  alt="uploaded"
-                  className="mt-1 max-w-[200px] rounded"
-                />
-              )}
-              <span className="text-xs text-gray-600 block">
-                {msg.text.timestamp}
-              </span>
-            </div>
+            {(msg?.text || msg?.image) && (
+              <div className="inline-block bg-blue-200 px-3 py-1 rounded">
+                {msg?.text && <p>{msg?.text}</p>}
+                {msg?.image && (
+                  <img
+                    src={msg?.image}
+                    alt="uploaded"
+                    className="mt-1 max-w-[200px] rounded"
+                  />
+                )}
+                <span className="text-xs text-gray-600 block">
+                  {msg?.timestamp}
+                </span>
+              </div>
+            )}
           </div>
         ))}
         {isTyping && (
